@@ -57,7 +57,20 @@ router.post("/signup", (req, res, next) => {
 
 // https://my.ironhack.com/cohorts/6308c7cea5eeff002c60c2d7/lms/courses/course-v1:IRONHACK+WDFT+202310_BCN/modules/ironhack-course-chapter_9/units/ironhack-course-chapter_9-sequential_1-vertical_2#Sign-Up-Route
 // POST		/auth/login
+router.post("/login", (req, res, next) => {
+	const { email, password } = req.body;
 
+	// Check if email or password are provided as empty string
+	if (email === "" || password === "") {
+		res.status(400).json({ message : "Provide e-mail and password!" });
+		return;
+	}
+
+	// Check the users collection if a user with the same email exists
+	
+
+
+})
 
 // GET		/auth/verify
 
