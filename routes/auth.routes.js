@@ -6,6 +6,10 @@ const User = require("../models/User.model");
 const router = express.Router();
 const saltRounds = 15;
 
+const respondErrMessage = (response, statusNo, messageText) => {
+	response.status(statusNo).json({ message: messageText });
+};
+
 // POST		/auth/signup
 router.post("/signup", (req, res, next) => {
 	// get varaiables from request body
@@ -13,21 +17,21 @@ router.post("/signup", (req, res, next) => {
 
 	// check if no empty e-mail or password fields
 	if (email === '' || password === '') {
-		res.status(400).json({message: "e-mail and password are required."});
+		respondErrMessage(res, 400, "e-mail and password are required.");
 		return;
 	}
 
 	//set Regex rule and check the e-mail with this rule
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 	if (!emailRegex.test(email)) {
-		res.status(400).json({message: "Provide a valid e-mail address!"});
+		respondErrMessage(res, 400, "Provide a valid e-mail address!");
 		return;
 	}
 
 	//set Regex rule and check the password with this rule
 	const passwordRegex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}/;
 	if (!passwordRegex.test(password)) {
-		res.status(400).json({message: "Password must have at least 6 characters, contain at least one number, one lowercase and one uppercase letter. "});
+		respondErrMessage(res, 400, "Password must have at least 6 characters, contain at least one number, one lowercase and one uppercase letter.");
 		return;
 	}
 
@@ -35,7 +39,7 @@ router.post("/signup", (req, res, next) => {
 	User.findOne({email})
 		.then((foundUser) => {
 			if (foundUser) {
-				res.status(400).json({ message: "User with this e-mail already exists"});
+				respondErrMessage(res, 400, "User with this e-mail already exists");
 				return;
 			}
 
@@ -51,7 +55,7 @@ router.post("/signup", (req, res, next) => {
 			res.status(200).json({user});
 		})
 		.catch((err) => {
-			res.status(500).json({message: `Server error: ${err}`});
+			respondErrMessage(res, 500, `Server error: ${err}`);
 		});
 })
 
@@ -67,7 +71,13 @@ router.post("/login", (req, res, next) => {
 	}
 
 	// Check the users collection if a user with the same email exists
-	
+	User.findOne({"email": {$eq: email}})
+		.then(foundUser => {
+			if (!foundUser) {
+				respondErrMessage(res, 400, "e-mail address not found.");
+				return;
+			}
+		})
 
 
 })
